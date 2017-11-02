@@ -380,7 +380,7 @@ han: false
 # Disqus
 disqus:
   enable: true
-  shortname:
+  shortname: 'sindrilincom'
   count: true
   # hide comments (visitors need to click to load the comments)
   # count need to be false when hide is true
