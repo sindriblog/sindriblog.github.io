@@ -4,17 +4,17 @@
 # ---------------------------------------------------------------
 
 # Site
-title: NexT
-subtitle:
-description:
-author: John Doe
+title: sindrilin的小巢
+subtitle: 
+description: 本站记录我iOS之旅的沿途风景
+author: Sindri Lin
 # Support language: de, en, fr-FR, id, ja, ko, pt-BR, pt, ru, zh-Hans, zh-hk, zh-tw
-language: en
+language: zh-Hans
 date_format: '%Y-%m-%d'
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com' and baseurl as '/child'
-url:
+url:'http://www.sindrilin.com'
 baseurl:
 permalink: pretty
 
@@ -78,7 +78,7 @@ plugins:
 favicon: /assets/favicon.ico
 
 # Set default keywords (Use a comma to separate)
-keywords: "Jekyll, NexT"
+keywords: "Hello World"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
@@ -379,8 +379,8 @@ han: false
 
 # Disqus
 disqus:
-  enable: false
-  shortname:
+  enable: true
+  shortname:sindrilincom
   count: true
   # hide comments (visitors need to click to load the comments)
   # count need to be false when hide is true
@@ -443,7 +443,7 @@ changyan:
 # user_id must NOT be null when admin_enable is true!
 # you can visit http://dev.duoshuo.com get duoshuo user id.
 duoshuo_info:
-  ua_enable: true
+  ua_enable: false
   admin_enable: false
   user_id: 0
   #admin_nickname: Author
@@ -700,3 +700,5 @@ images: assets/images
 
 # Theme version
 version: 5.1.1
+
+
