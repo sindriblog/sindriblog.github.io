@@ -1,14 +1,10 @@
 ---
-layout: post
 title: 认识CoreAnimation
-categories: 动画
-tags: 动画
-author: SindriLin
+categories:
+- 动画
+tags:
+- 动画
 ---
-
-* content
-{:toc}
-
 
 在iOS中，普通的动画可以使用`UIKit`提供的方法来实现动画，但如果想要实现复杂的动画效果，使用`CoreAnimation`框架提供的动画效果是最好的选择。那么两种动画方案相比之下，后者存在的主要好处包括不仅下面这些：
 
@@ -402,12 +398,4 @@ author: SindriLin
 
 这里可能会有人有疑惑，为什么两次输出的`CABasicAnimation`的地址不一样。为了保证同一个动画对象可以作用于多个`CALayer`对象执行，在`addAnimation(_:forKey:)`方法调用的时候都会对`CAAnimation`对象进行一次`copy`操作。各位可以继承`CABasicAnimation`对象重写`copy`方法自行测试
 
- 尾言
-----
-
-本来笔者想要直接使用动画粒子开始讲解核心动画这一框架，但是考虑到如果能够全面的对核心动画进行一次讲解，这对于以后的文章讲解以及动画粒子的制作有很大的帮助。
-
-[本文demo](https://github.com/JustKeepRunning/Animations)
-
-转载请注明本文作者和转载地址
 
