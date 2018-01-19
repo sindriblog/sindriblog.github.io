@@ -96,4 +96,19 @@ tags:
 ## 字典
 
 
+### hash
+这里的`hash`指的不是上面的`哈希排序`，而是`- (void)hash`这个方法。在`OC`中，万物皆`NSObject`的子孙，`NSObject`某种意义上来说等同于`OC`的上帝类。作为所有类的基类，`NSObject`提供了诸多接口，也存在着许多冷门方法，这些冷门的方法在程序运行中起到了非常重要的作用。比如我们想要判断某个对象是否存在数组中：
+
+    NSArray *nums = @[@(1), @(2), @(3), @(4), @(5)];
+    NSLog(@"%zd", [nums containsObject: @(1)]);
+
+苹果为了提高检索的效率，在匹配两个对象是否相同，会先判断两个对象的`hash`是否相等，再进行进一步的判断。`hash`方法一般耗时在微妙级，能有效的减少匹配的耗时：
+
+    - (BOOL)compareObj1: (id)obj1 withObj2: (id)obj2 {
+        if ([obj1 hash] == [obj2 hash]) {
+            return [obj1 isEqual: obj2];
+        }
+        return NO;
+    }
+
 
