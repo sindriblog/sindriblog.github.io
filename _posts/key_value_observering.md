@@ -16,9 +16,40 @@ tags:
 翻译过来就是：`KVO`是通过一种称作`isa-swizzling`的机制实现的，这个机制会在被观察对象的属性被监听时修改对象的`isa`指针，让指针指向一个中间类而非对象自身的类。
 
 ## isa
-如果你还能用英语而非拼音的方式命名变量，那么`Objective-C`你可以很容易就看出这是基于`C`语言封装的面向对象语言，这也意味着复杂的`class`结构只是基于`struct`实现的。抛开这个封装的难度不谈，
+通过文档的描述，可以得出`isa`指针是`KVO`的实现机制中最为核心的变量，那么什么是`isa`指针？如果你能使用英语而非拼音来书写代码，那么一定能够明白`Objective-C`翻译过来就是`C`语言的面向对象。换句话说：
 
-[](https://opensource.apple.com/source/objc4/objc4-532/runtime/runtime.h)
+> OC的所有对象都是封装于C语言的结构体
+
+虽然可以想象到，使用`struct`来实现面向对象的特性必然是一个十分复杂的过程，但继承的实现我们可以轻易的想象出来：在自身结构内部预留父结构体的变量。打个比方，`NSObject`的结构体为`objc_object`，存储了一个`isa`指针，假如存在子类`Person`，翻阅[objc-private](https://opensource.apple.com/source/objc4/objc4-646/runtime/objc-private.h.auto.html)可以确定子类的结构组成：
+
+    struct objc_object {
+        isa_t isa;
+    };
+    
+    struct Person {
+        struct objc_object {
+            isa_t isa;
+        };
+        ......
+    }
+    
+由于`NSObject`是所有类的父类，因此可以确定的是，每个对象的结构中都有一个`isa`指针。那么`isa`用来干嘛？通过`objc_object`的结构得出这个指针的类型是`isa_t`，在去掉不需要的编译器匹配代码后其结构如下：
+
+    union isa_t 
+    {
+        isa_t() { }
+        isa_t(uintptr_t value) : bits(value) { }
+    
+        Class cls;
+        uintptr_t bits;
+        
+        ......
+    };
+    
+这里面最重要的一个变量是`cls`，表示的是这个结构体代表的是哪个类。可以得出结论，`isa`指针决定了对象的所属类型。除此之外`isa`还存储了很多额外信息，如果你想了解更多，可以通过文末的扩展阅读了解更多。
+
+### isa-swizzling
+顾名思义，`isa-swizzling`是用来修改`isa`指针的机制，通过源码我们已经知道`isa`用来表示对象的所属类型，那么交换`isa`指针可以看做是修改对象的所属类型。正常情况下，由于`isa`指针存在私有文件中，根本不对外暴露，开发者是没有机会修改这个指针的，但是`runtime.h`中暴露了`object_setClass`函数，它允许我们修改一个对象的`class`，等同于修改了这个对象的`isa`指针。
 
 ## 从观察者说起
 从高中开始，哥们几个总会在教室的电脑里装上一款《拳皇98》。在晚饭过后、晚修之间切磋几把，岂不快哉。但总有刁民想害朕，班主任是这一优良传统的破坏者，为了避免这唯一的休闲活动受到打搅，总有一个小伙伴兼职放风的职责，观察班主任是否过来了。
