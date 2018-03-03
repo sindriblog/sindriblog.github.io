@@ -1,5 +1,5 @@
 ---
-title: 奇怪的线程概念
+title: 奇怪的GCD
 date: 2018-01-21 08:00:00
 categories:
 - Note
