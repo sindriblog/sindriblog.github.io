@@ -323,7 +323,11 @@ tags:
 由于在源码中`async`调用对于主队列和子队列的表现不同，后者会直接启用一个线程来执行子队列的任务，这就是导致了`runloop`在主队列和子队列上差异化的原因，也能说明苹果并没有大肆修改`libdispatch`的源码
 
 ## 有趣的runloop唤醒机制
-如果你看过`runloop`相关的博客或者文档，那么应该会它是一个不断处理消息、事件的死循环，但死循环是会消耗大量的`cpu`资源的（自旋锁就是死循环空转）。`runloop`为了提高线程的使用效率以及减少不必要的损耗，在没有事件处理的时候，假如此时存在`timer、port、source`任一一种，那么进入休眠状态；假如不存在三者其中之一，那么`runloop`将会退出。因此为了探讨`runloop`的唤醒，我们可以通过添加一个空端口来维持`runloop`的运转：
+如果你看过`runloop`相关的博客或者文档，那么应该会它是一个不断处理消息、事件的死循环，但死循环是会消耗大量的`cpu`资源的（自旋锁就是死循环空转）。`runloop`为了提高线程的使用效率以及减少不必要的损耗，在没有事件处理的时候，假如此时存在`timer、port、source`任一一种，那么进入休眠状态；假如不存在三者其中之一，那么`runloop`将会退出
+
+![](http://p0zs066q3.bkt.clouddn.com/2018030305.png)
+
+因此为了探讨`runloop`的唤醒，我们可以通过添加一个空端口来维持`runloop`的运转：
 
     CFRunLoopRef runloop = NULL;
     NSThread *thread = [[NSThread alloc] initWithBlock: ^{
