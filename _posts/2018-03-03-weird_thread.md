@@ -320,13 +320,39 @@ tags:
 - 主队列的`runloop`一旦启动，就只会被该线程执行任务
 - 子队列的`runloop`无法绑定队列和线程的执行关系
 
-由于在源码中`async`调用对于主队列和子队列的表现不同，后者会直接启用一个线程来执行子队列的任务，这就是导致了`runloop`在主队列和子队列上差异化的原因，也能说明苹果并没有大肆修改`libdispatch`的源码。
+由于在源码中`async`调用对于主队列和子队列的表现不同，后者会直接启用一个线程来执行子队列的任务，这就是导致了`runloop`在主队列和子队列上差异化的原因，也能说明苹果并没有大肆修改`libdispatch`的源码
+
+## 有趣的runloop唤醒机制
+如果你看过`runloop`相关的博客或者文档，那么应该会它是一个不断处理消息、事件的死循环，但死循环是会消耗大量的`cpu`资源的（自旋锁就是死循环空转）。`runloop`为了提高线程的使用效率以及减少不必要的损耗，在没有事件处理的时候，假如此时存在`timer、port、source`任一一种，那么进入休眠状态；假如不存在三者其中之一，那么`runloop`将会退出。因此为了探讨`runloop`的唤醒，我们可以通过添加一个空端口来维持`runloop`的运转：
+
+    CFRunLoopRef runloop = NULL;
+    NSThread *thread = [[NSThread alloc] initWithBlock: ^{
+        runloop = [NSRunLoop currentRunLoop].getCFRunLoop;
+        [[NSRunLoop currentRunLoop] addPort: [NSMachPort new] forMode: NSRunLoopCommonModes];
+        [[NSRunLoop currentRunLoop] run];
+    }];
+    
+这里主要讨论的是仓鼠大佬的第五题，原问题可以直接到最下面翻链接。主要要说明的是问题中提到的两个`api`，用于添加任务到这个`runloop`中：
+
+    CFRunLoopPerformBlock(runloop, NSRunLoopCommonModes, ^{
+        NSLog(@"runloop perform block 1");
+    });
+    
+    [NSObject performSelector: @selector(log) onThread: thread withObject: obj waitUntilDone: NO];
+    
+    CFRunLoopPerformBlock(runloop, NSRunLoopCommonModes, ^{
+        NSLog(@"runloop perform block 2");
+    });
+    
+上面的代码如果去掉了第二个`perform`调用，那么第一个调用不会输出，反之就会都输出。从名字上看，两个调用都是往所在的线程里面添加执行任务，区别在于后者的调用实际上并不是直接插入任务`block`，而是将任务包装成一个`timer`事件来添加，这个事件会唤醒`runloop`。当然，前提是`runloop`处在休眠中。
+
+> `CFRunLoopPerformBlock`提供了往`runloop`中添加任务的功能，但又不会唤醒`runloop`，在事件很少的情况下，这个`api`能有效的减少线程状态切换的开销
 
 ## 其他
 过了一个漫长的春节假期之后，感觉急需一个节假日来休息，可惜这只是奢望。由于节后综合征，在这周重新返工的状态感觉一般，也偶尔会提不起神来，希望自己尽快恢复过来。另外随着不断的积累，一些自以为熟悉的奇怪问题又总能带来新的认知和收获，我想这就是学习最大的快乐了
 
 ## 关于使用代码
-由于`Swift`语法上和`OC`始终存在差异，第二段代码并不能很好的还原，如果对此感兴趣的朋友可以关注下方`仓鼠大佬`的博客链接，大佬放话后续会放出源码。另外如果不想阅读`libdispatch`源码又想对这部分的逻辑有所了解的朋友可以看下面的链接文章
+由于`Swift`语法上和`OC`可能存在差异，建议读者可以阅读`Swift`源码对比本文讲述。关注下方`仓鼠大佬`的博客链接，大佬放话后续会放出源码。另外如果不想阅读`libdispatch`源码又想对这部分的逻辑有所了解的朋友可以看下面的链接文章
 
 ## 扩展阅读
 [仓鼠大佬](https://www.jianshu.com/subscriptions#/subscriptions/227486/user)
