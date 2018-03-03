@@ -102,22 +102,22 @@ tags:
 - 主队列总是可以调用`UIKit`的接口`api`
 - 同时只有一条线程能够执行串行队列的任务
 
-同样的，朋友给出了另一份代码，但由于代码中存在一个`Swift`的关键函数，因此直接展示原代码：
+同样的，朋友给出了另一份代码：
 
-    let key = DispatchSpecificKey<String>()
-    DispatchQueue.main.setSpecific(key: key, value: "main")
     
-    func log() {
-        debugPrint("main thread: \(Thread.isMainThread)")
-        let value = DispatchQueue.getSpecific(key: key)
-        debugPrint("main queue: \(value != nil)")
+    dispatch_queue_set_specific(mainQueue, "key", "main", NULL);
+    
+    dispatch_block_t log = ^{
+        printf("main thread: %zd", [NSThread isMainThread]);
+        void *value = dispatch_get_specific("key");
+        printf("main queue: %zd", value != NULL);
     }
     
-    DispatchQueue.global().async {
-        DispatchQueue.main.async(execute: log)
-    }
+    dispatch_async(globalQueue, ^{
+        dispatch_async(dispatch_get_main_queue(), log);
+    });
     
-    dispatchMain()
+    dispatch_main();
     
 运行之后，输出结果分别为`NO`和`YES`，也就是说此时主队列的任务并没有在主线程上执行。要弄清楚这个问题的原因显然难度要比上一个问题难度大得多，因为如果子线程可以执行主队列的任务，那么此时是无法提交打包图层信息到渲染服务的
 
@@ -131,7 +131,7 @@ tags:
     }
 
 为了找到答案，首先需要对问题`主线程只会执行主队列的任务`的代码进行改造一下。另外由于第二个问题涉及到`执行任务所在的线程`，`mach_thread_self`函数会返回当前线程的`id`，可以用来判断两个线程是否相同：
-
+    
     thread_t threadId = mach_thread_self();
     
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
@@ -160,34 +160,34 @@ tags:
 
 由于`UIApplicationMain`是个私有`api`，我们没有其实现代码，但是我们都知道在这个函数调用之后，主线程的`runloop`会被启动，那么这个线程的变动是不是跟`runloop`的启动有关呢？为了验证这个判断，在手动启动`runloop`定时的去检测线程：
     
-    func log() {
-        debugPrint("is main thread: \(Thread.isMainThread)")
-    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1), execute: log)
+    dispatch_block_t log = ^{
+        printf("is main thread: %zd\n", [NSThread isMainThread]);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), log);
     }
     
-    DispatchQueue.global().async {
-        DispatchQueue.main.async(execute: log)
-    }
+    dispatch_async(globalQueue, ^{
+        dispatch_async(dispatch_get_main_queue(), log);
+    });
     
-    RunLoop.current.run()
+    [[NSRunLoop currentRunLoop] run];
     
 在`runloop`启动后，所有的检测结果都是`YES`：
 
     // console log
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
-    "is main thread: true"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
+    "is main thread: 1"
 
 代码的运行结果验证了这个猜想，但结论就变成了：
 
@@ -195,49 +195,47 @@ tags:
 
 这样的结论，随便启动一个`work queue`的`runloop`就能轻易的推翻这个结论，那么是否可能只有第一次启动`runloop`的线程才有可能变成主线程？为了验证这个猜想，继续改造代码：
 
-    let serialQueue = DispatchQueue(label: "serial.queue")
+    dispatch_queue_t serialQueue = dispatch_queue_create("serial.queue", DISPATCH_QUEUE_SERIAL);
     
-    func logSerial() {
-        debugPrint("is main thread: \(Thread.isMainThread)")
-    serialQueue.asyncAfter(deadline: DispatchTime.now() + .seconds(1), execute: logSerial)
+    dispatch_block_t logSerial = ^{
+        printf("is main thread: %zd\n", [NSThread isMainThread]);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), serialQueue, log);
     }
     
-    serialQueue.async {
-        RunLoop.current.run()
-    }
+    dispatch_async(serialQueue, ^{
+        [[NSRunLoop currentRunLoop] run];
+    });
+    dispatch_async(globalQueue, ^{
+        dispatch_async(serialQueue, logSerial);
+    });
     
-    DispatchQueue.global().async {
-        serialQueue.async(execute: logSerial)
-    }
+    dispatch_main();
     
-    dispatchMain()
-    
-在保证了子线程的`runloop`是第一个被启动的情况下，所有运行的输出结果都是`false`，也就是说因为`runloop`修改了线程的`priority`的猜想是不成立的，那么基于`UIApplicationMain`测试代码的两个条件无法解释`主队列为什么没有运行在主线程上`
+在保证了子线程的`runloop`是第一个被启动的情况下，所有运行的输出结果都是`NO`，也就是说因为`runloop`修改了线程的`priority`的猜想是不成立的，那么基于`UIApplicationMain`测试代码的两个条件无法解释`主队列为什么没有运行在主线程上`
 
 #### 主队列不总是在同一个线程上执行
 经过来回推敲，我发现`主队列总是在同一个线程上执行`这个条件限制了进一步扩大猜想的可能性，为了验证这个条件，通过定时输出主队列任务所在的`threadId`来检测这个条件是否成立：
 
-    let threadId =  mach_thread_self()
-    let serialQueue = DispatchQueue(label: "serial.queue")
-    debugPrint("current thread id is: \(threadId)")
+    thread_t threadId = mach_thread_self();
+    dispatch_queue_t serialQueue = dispatch_queue_create("serial.queue", DISPATCH_QUEUE_SERIAL);
+    printf("current thread id is: %d\n", threadId);
     
-    func logMain() {
-        debugPrint("=====main queue======> thread id is: \(mach_thread_self())")
-        
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1), execute: logMain)
+    dispatch_block_t logMain = ^{
+        printf("=====main queue======> thread id is: %d\n", mach_thread_self());
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), logMain);
     }
     
-    func logSerial() {
-        debugPrint("serial queue thread id is: \(mach_thread_self())")
-        serialQueue.asyncAfter(deadline: DispatchTime.now() + .seconds(1), execute: logSerial)
+    dispatch_block_t logSerial = ^{
+        printf("serial queue thread id is: %d\n", mach_thread_self());
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), serialQueue, logSerial);
     }
     
-    DispatchQueue.global().async {
-        serialQueue.async(execute: logSerial)
-        DispatchQueue.main.async(execute: logMain)
-    }
+    dispatch_async(globalQueue, ^{
+        dispatch_async(serialQueue, logSerial);
+        dispatch_async(dispatch_get_main_queue(), logMain);
+    });
     
-    dispatchMain()
+    dispatch_main();
     
 在测试代码中增加子队列定时做对比，发现不管是`serial queue`还是`main queue`，都有可能运行在不同的线程上面。但是如果去掉了子队列作为对比，`main queue`只会执行在一条线程上，但该线程的`threadId`总是不等同于我们保存下来的数值：
     
@@ -285,20 +283,25 @@ tags:
 
 要测试这个猜想也很简单，只要对比`runloop`前后的`threadId`是否一致就可以了：
 
-    let threadId =  mach_thread_self()
-    debugPrint("current thread id is: \(threadId)")
+    thread_t threadId = mach_thread_self();
+    printf("current thread id is: %d\n", threadId);
     
-    func logMain() {
-        debugPrint("=====main queue======> thread id is: \(mach_thread_self())")
-        
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1), execute: logMain)
-    }
-
-    DispatchQueue.global().async {
-        DispatchQueue.main.async(execute: logMain)
+    dispatch_block_t logMain = ^{
+        printf("=====main queue======> thread id is: %d\n", mach_thread_self());
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), logMain);
     }
     
-    RunLoop.current.run()
+    dispatch_block_t logSerial = ^{
+        printf("serial queue thread id is: %d\n", mach_thread_self());
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), serialQueue, logSerial);
+    }
+    
+    dispatch_async(globalQueue, ^{
+        dispatch_async(serialQueue, logSerial);
+        dispatch_async(dispatch_get_main_queue(), logMain);
+    });
+    
+    [[NSRunLoop currentRunLoop] run];
     
     // console log
     current thread id is: 775
