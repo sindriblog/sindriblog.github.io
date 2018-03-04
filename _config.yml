@@ -213,7 +213,7 @@ font:
 # Key is the link label showing to end users.
 # Value is the target link (E.g. GitHub: https://github.com/iissnan)
 social:
-  E-mail: codersindri@gmail.com
+  E-mail: mailto:codersindri@gmail.com
   Github: https://github.com/sindrilin
   简书: https://www.jianshu.com/u/0cf7d455eb9e
   掘金: https://juejin.im/user/56de9e15c4c9710055a0563f/posts
