@@ -45,7 +45,7 @@ tags:
     
 上面两种不同的应用场景，实际上是使用`timer`和`port`维持`runloop`不会因为没有事件处理直接退出，而且在这些源事件来临之前，线程大多数情况下处在休眠状态不造成额外损耗
 
-### 串行队列的runloop
+## 串行队列的runloop
 假设现在需要使用一个子线程的`runloop`来实现定时器，由于`runloop`在停止之前，线程会一直存活，因此可能会想利用这个存活的线程处理其他的任务。因此除了`NSTimer`之外，我们添加一个`GCD Timer`定时的派发任务给这个启动`runloop`的队列：
 
     dispatch_queue_t serialQueue = dispatch_queue_create("serial.queue", DISPATCH_QUEUE_SERIAL);
@@ -135,7 +135,7 @@ tags:
     2018-04-14 11:01:33.429207+0800 PThreads[15619:198121] ns timer in the thread: 4355
     2018-04-14 11:01:33.429519+0800 PThreads[15619:198121] perform block in thread: 4355
 
-### 并行队列的runloop
+## 并行队列的runloop
 队列的`串并行`属性决定了队列能不能被多个线程处理任务，因此同样的代码在并行队列执行，产生的结果必然是有所区别的：
 
     __block CFRunLoopRef serialRunLoop = NULL;
@@ -196,7 +196,7 @@ tags:
 
 虽然并行队列的`async`功能并不会因为启动了`runloop`受到影响，但是可以发现如果不去保存`runloop`，这个保活的线程除了定时器能正常处理之外，其他时候不会再被`GCD`复用
 
-### 使用port保活
+## 使用port保活
 如果不使用`NSTimer`这种稳定的唤醒机制来保活线程，而是采用`port`的方式，线程的表现是否依旧符合预期？
 
     __block CFRunLoopRef serialRunLoop = NULL;
