@@ -141,3 +141,6 @@ tags:
 > 你应该总是认为：在你应用之外的其他东西，会对你保持敌意并且有毁灭你的可能
 
 因此，我们要学习如何合理的运用内存使用策略，来抵抗应用外的进攻。当然，最重要的是，我们可以理直气壮的告诉`QA`：哼，应用的内存使用降下来了！
+
+![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+

@@ -297,4 +297,6 @@ tags:
 ## 总结
 `mock`并不是一种特定的操作或者编程手段，它更像是一种剖析工程细节来解决特殊环境下难题的解决思路。无论如何，如果我们想要继续在开发领域上继续深入，必然要学会从更多的角度和使用更多的工具来理解和解决开发上的难题，而`mock`绝对是一种值得学习的开发思想
 
+![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+
 

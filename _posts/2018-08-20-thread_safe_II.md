@@ -198,3 +198,5 @@ tags:
 ## 最后
 很方，这个月想了很多想写的内容，然后发现别人都写过，尴尬的一笔。果然还是自己太鶸了，最后随便赶工了一篇全是水货的文章，瑟瑟发抖
 
+![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+

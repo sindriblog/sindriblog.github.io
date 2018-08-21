@@ -241,3 +241,6 @@ tags:
 ## 结论
 从测试来看，在子线程启动`runloop`并不是一个很明智的选择：这会导致线程保活期间被遗弃，失去了处理消息派发的能力，且无法响应其他线程的通信。其次，即便可以通过`perform block`来继续为保活线程添加任务处理，但在保活线程的`runloop`缺乏稳定的唤醒机制的情况下，还需要其他线程来提供唤醒能力，这增加了代码设计的成本，并且不会有额外的好处
 
+![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+
+

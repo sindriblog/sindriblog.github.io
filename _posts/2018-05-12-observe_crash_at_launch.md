@@ -173,6 +173,8 @@ tags:
     5. 缺少动态修复的手段，包括`1, 2, 3`的方案。可考虑通过第三方越狱市场提供逆向包，提示用户下载安装
 
     6. 缺少动态修复的手段，包括`1, 2, 3`的方案。增发版本快速止损，使用`Test Flight`分批次快速让用户恢复使用
+    
+![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
 
 
 

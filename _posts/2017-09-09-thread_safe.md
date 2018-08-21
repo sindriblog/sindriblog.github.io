@@ -179,3 +179,6 @@ tags:
 
 [用汇编实现原子操作](http://blog.csdn.net/zacklin/article/details/7445421)
 
+
+![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+
