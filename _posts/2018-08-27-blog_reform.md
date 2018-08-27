@@ -1,6 +1,6 @@
 ---
-title: 博客瞎几把重整计划
-date: 2018-08-24 08:00
+title: 博客重整与进度
+date: 2018-08-27 12:00
 tags:
 - Note
 ---
@@ -11,10 +11,13 @@ tags:
 - 分析实现。分析系统的机制、某些代码设计，然后写`demo`实践
 - 质量监控。主要是`APM`的设计实现
 - `runtime`。看源码与吹逼
-- 动画。这个也是鸽的厉害
+- 动画开发。这个也是鸽的厉害
 - 开发日记。其实就是`common`，懒得进行细分分类
 
 重整的时候会尽可能的保证文章质量以及写作效率，另外还要注意可读性，这方面旧文章被吐槽已经不是一回两回了
+
+## 进度
+[分析实现-谈谈响应链](http://sindrilin.com/2018/08/27/response_chain.html)
 
 ![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
 
