@@ -237,6 +237,14 @@ tags:
 | 实现成本 | 需要维护方法栈和优化拦截算法。高 |
 | 结论 | 准确率很高的工具，但不适用于`Swift`代码 |
 
+## 总结
+
+|  | fps | ping | runloop | stack backtrace | msgSend observe |
+| --- | --- | --- | --- | --- | --- |
+| 卡顿反馈 | 高 | 中高 | 中 | 高 | 高 |
+| 采集精度 | 低 | 中高 | 中低 | 高 | 高 |
+| 性能损耗 | 中低 | 中 | 低 | 中高 | 高 |
+| 实现成本 | 低 | 中低 | 中低 | 中高 | 高 |
 
 
 ![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
