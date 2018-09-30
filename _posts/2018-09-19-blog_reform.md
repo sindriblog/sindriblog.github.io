@@ -18,6 +18,7 @@ tags:
 
 ## 进度
 [分析实现-谈谈响应链](http://sindrilin.com/2018/08/27/response_chain.html)
+[质量监控-卡顿检测](http://sindrilin.com/2017/03/24/blocking_observe.html)
 
 ![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
 
