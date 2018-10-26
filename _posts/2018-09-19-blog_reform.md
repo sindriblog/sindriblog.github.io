@@ -1,6 +1,6 @@
 ---
-title: 博客重整与进度（09-30更新）
-date: 2018-09-30 12:00
+title: 博客重整与进度（10-26更新）
+date: 2018-10-26 12:00
 tags:
 - 开发日记
 ---
@@ -17,6 +17,8 @@ tags:
 重整的时候会尽可能的保证文章质量以及写作效率，另外还要注意可读性，这方面旧文章被吐槽已经不是一回两回了
 
 ## 进度
+[分析实现-实现KVO](http://sindrilin.com/2015/12/12/implemente_KVO.html)
+
 [分析实现-谈谈响应链](http://sindrilin.com/2018/08/27/response_chain.html)
 
 [质量监控-卡顿检测](http://sindrilin.com/2017/03/24/blocking_observe.html)
