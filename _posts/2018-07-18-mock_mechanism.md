@@ -1,11 +1,8 @@
 ---
 title: mock in iOS
 date: 2018-07-18 08:00:00
-categories:
-- Note
 tags:
-- Note
-- Tips
+- 开发日记
 ---
 
 在面向对象编程中，有个非常有趣的概念叫做`duck type`，意思是如果有一个走路像鸭子、游泳像鸭子，叫声像鸭子的东西，那么它就可以被认为是鸭子。这意味着当我们需要一个鸭子对象时，可以通过`instantiation`或者`interface`两种机制来提供鸭子对象：

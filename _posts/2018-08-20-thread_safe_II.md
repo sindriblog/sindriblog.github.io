@@ -1,11 +1,8 @@
 ---
 title: 线程安全（二）
 date: 2018-08-20 08:00:00
-categories:
-- Note
 tags:
-- thread
-- lock
+- 多线程
 ---
 
 之前写过一篇[线程安全](http://sindrilin.com/note/2017/09/09/thread_safe.html)，简单介绍了保护数据安全的多种方式，以及其中一部分方式的原理。基于此基础，本文将介绍如何避免锁的性能浪费，以及如何实现无锁安全结构

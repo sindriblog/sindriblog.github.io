@@ -1,11 +1,7 @@
 ---
 title: 被遗弃的线程
 date: 2018-04-14 08:00:00
-categories:
-- Note
 tags:
-- Note
-- Tips
 - 多线程
 ---
 
