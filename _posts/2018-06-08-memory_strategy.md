@@ -1,5 +1,5 @@
 ---
-title: WWDC笔记-内存策略
+title: WWDC-内存策略
 date: 2018-06-08 08:00:00
 tags:
 - 开发笔记
