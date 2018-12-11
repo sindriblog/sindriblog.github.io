@@ -206,4 +206,6 @@ tags:
 ## 效果
 经过两轮图片减包处理后，整个项目资源产生的减包量约有`20M`，其中通过文中的三种手段产生的减包量在`6.5M`左右，整体上来看产出还是比较可观的
 
+![关注我的公众号获取更新信息](https://upload-images.jianshu.io/upload_images/783864-5f15782c42a970c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 
