@@ -60,7 +60,7 @@ tags:
 
 将`大段代码`改为`小段代码`加锁是一种常见的减少锁性能损耗的做法，因此不再多提。但接下来要说的是另一种常见但因为锁粒度造成损耗的问题：设想一下这个场景，在改良后的代码使用中，`线程A`对第三个元素进行修改，`线程B`对第四个元素进行修改：
 
-![](https://upload-images.jianshu.io/upload_images/783864-6b02471c8091d582.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/20/1655797e44984cd4?w=1236&h=1192&f=jpeg&s=92756)
 
 在两个线程修改`user`的过程中，实际上双方的操作是不冲突，但是`线程B`必须等待`A`完成修改工作，造成这个现象的原因是虽然看起来是对`usr.name`进行了加锁，但实际上是锁住了`collection`或`caches`的操作，所以避免这种隐藏的粒度锁问题的方案是以容器元素单位构建锁：包括`全局锁`和`独立锁`两种：
 
@@ -108,7 +108,7 @@ tags:
     
     cur.next = cur.next.next;
 
-![](https://upload-images.jianshu.io/upload_images/783864-cc6079ba9e8a378b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/20/1655797e44af9135?w=1240&h=494&f=jpeg&s=34551)
 
 只要`A.next`的修改是不受多线程干扰的，那么就能保证删除元素的安全
 
@@ -139,11 +139,11 @@ tags:
 
 基于上面删除`B`的例子，同一时间存在其他线程在`A`节点后追加`D`节点：
 
-![](https://upload-images.jianshu.io/upload_images/783864-c425798ee2fdf856.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/20/1655797e44a1188c?w=1240&h=912&f=jpeg&s=60531)
 
 由于`CPU`可能在任务执行过程中切换线程，如果`D`节点的修改工作正好在删除任务的中间完成，最终可能导致的是`D`节点的误删：
 
-![](https://upload-images.jianshu.io/upload_images/783864-1acf37d2ef881b81.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/20/1655797e448076a2?w=1240&h=818&f=jpeg&s=51632)
 
 所以上面的`CAS`还需要考虑`A.next`是否发生了改变：
 
@@ -195,5 +195,6 @@ tags:
 ## 最后
 很方，这个月想了很多想写的内容，然后发现别人都写过，尴尬的一笔。果然还是自己太鶸了，最后随便赶工了一篇全是水货的文章，瑟瑟发抖
 
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
+
 

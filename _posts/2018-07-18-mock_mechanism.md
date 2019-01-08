@@ -239,7 +239,7 @@ tags:
 
 而后者比较特殊，无论是结构布局，还是实例对象，我们都无法获取到。打个比方，我需要统计应用编译包的二进制段的信息，通过使用`hopper`工具可以得到`objc_classlist_DATA`段的情况：
 
-![](https://upload-images.jianshu.io/upload_images/783864-7956de594ccd2878.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/7/18/164ac161cdd789c1?w=1240&h=1155&f=png&s=466525)
 
 由于此时没有任何的真实对象和结构参考，只能知道每一个`__objc_data`的长度是`72`字节。因此这种情况下需要先模拟出等长于二进制数据的结构体，然后通过输出`16`进制数据来匹配数据段的布局信息：
 
@@ -294,6 +294,5 @@ tags:
 ## 总结
 `mock`并不是一种特定的操作或者编程手段，它更像是一种剖析工程细节来解决特殊环境下难题的解决思路。无论如何，如果我们想要继续在开发领域上继续深入，必然要学会从更多的角度和使用更多的工具来理解和解决开发上的难题，而`mock`绝对是一种值得学习的开发思想
 
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
-
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 

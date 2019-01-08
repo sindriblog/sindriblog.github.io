@@ -54,7 +54,7 @@ tags:
 - `Purgeable`
 
     右侧存储了可能使用过的数据，比如用户进入推荐功能后请求了大量的数据，使用`NSCache`缓存在内存中，以便重新进入推荐页时快速的展示内容，这部分数据是明显的`未使用数据`。这部分的内存会被系统直接清除后很快的重新分配使用
-
+    
 从内存的分类来看，减少`Dirty`数据的数量，增加`Purgeable`可以减少内存使用的压力
 
 ### 被动策略
@@ -63,7 +63,7 @@ tags:
 - `NSPurgeableData`
 
     前面说了被标记为`purgeable`的内存会被系统直接清理数据然后重新分配使用，这个清理的过程发生在发出警告之前。如果在清理`purgeable`之后就有足够的内存可用了，就不会发出警告。`NSPurgeableData`是`NSData`的子类，它提供了类似`dispatch_group_t`的接口，使用一个整型变量存储使用状态，当值为`0`时，表示数据处于`未使用`状态
-
+    
         NSPurgeableData *purgeableData = [[NSPurgeableData alloc] initWithBytes: fileData.bytes length: fileData.length];
         [purgeableData beginContentAccess];
         /// 值+1，开始使用数据
@@ -79,15 +79,15 @@ tags:
             purgeableData = [[NSPurgeableData alloc] initWithBytes: fileData.bytes length: fileData.length];
         }
         [purgeableData beginContentAccess];
-
+        
 - `NSCache`
 
     `NSCache`提供了一套类似`dictionary`的简单接口让我们存取数据，同时允许我们设置一个缓存最大值。`NSCache`的数据被认为是`purgeable`类型，这些数据会在缓存达到最大值时以`LRU`算法淘汰使用最少者，也会被系统在发出警告前回收
-
+        
 - `memory warning`
-
+    
     清理`purgeable`数据后，如果内存还是不够用，这时候系统就会向所有活跃应用发出内存警告，此时进入开发者的主动应对环节
-
+    
 ### 主动策略
 从操作上来说，`purgeable`的数据都需要开发者维护，更像是一种主动性的机制。但这个机制在内存不够用时，会被系统自动收回内存，而无需开发者进行更多额外的工作，因此被我归类到`被动策略`。主动策略更应该是接收到`memory warning`后，开发者进行的工作：
 
@@ -102,7 +102,7 @@ tags:
         [self.images removeAllObjects];
         [self cleanAllAnimatorViews];
     }
-
+    
 处理`warning`几乎是开发者的唯一有效手段，但是这种手段也并不完全可靠，如果依赖于系统发出的内存警告，存在几个风险点：
 
 - `memory warning`是针对所有运行应用发出的，这意味着同一时间，`CPU`可能忙不过来处理你的工作
@@ -139,5 +139,5 @@ tags:
 
 因此，我们要学习如何合理的运用内存使用策略，来抵抗应用外的进攻。当然，最重要的是，我们可以理直气壮的告诉`QA`：哼，应用的内存使用降下来了！
 
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 

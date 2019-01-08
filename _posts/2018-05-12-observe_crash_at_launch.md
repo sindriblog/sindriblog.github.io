@@ -10,7 +10,7 @@ tags:
 ## 启动过程
 从应用图标被用户点击开始，直到应用可以开始响应发生了很多事情。正常来说，尽管我们希望`crash`监控工具启动的尽可能早，但接入方往往总是等到`launch`事件之后才能启动工具，而在这个时间之前发生的崩溃就是启动`crash`，下面列出了在应用直到`launch`时，存在的可能发生启动`crash`的阶段：
 
-![](http://p0zs066q3.bkt.clouddn.com/2018051202.png)
+![image](https://user-gold-cdn.xitu.io/2018/5/12/163501c48f8b880a?w=1240&h=287&f=jpeg&s=16250)
 
 其中`initialize`的顺序可能在更早，但总是会在`load`和`launch`之间。从图中来说，如果我们想要监控启动`crash`，那么开始监控的时间点必须要放到`load`阶段，才能保证最好的监控效果
 
@@ -31,7 +31,7 @@ tags:
 
 最终得出监控的流程图：
 
-![](http://p0zs066q3.bkt.clouddn.com/2018051203.jpg)
+![image](https://user-gold-cdn.xitu.io/2018/5/12/163501c48e6adf28?w=1240&h=1173&f=jpeg&s=53870)
 
 ## 不依赖类
 不依赖类意味着监控工具需要使用`C`接口来实现功能，虽然比较麻烦，但由于`runtime`的机制决定了所有方法调用最终要以`objc_msgSend`函数作为入口，因此如果能够`hook`掉这个函数并且实现一个调用栈结构，将所有调用入栈记录，那么追踪方法调用就不是难事。`fishhook`提供了`hook`掉函数的能力：
@@ -169,8 +169,7 @@ tags:
     5. 缺少动态修复的手段，包括`1, 2, 3`的方案。可考虑通过第三方越狱市场提供逆向包，提示用户下载安装
 
     6. 缺少动态修复的手段，包括`1, 2, 3`的方案。增发版本快速止损，使用`Test Flight`分批次快速让用户恢复使用
-    
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
 
 
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 

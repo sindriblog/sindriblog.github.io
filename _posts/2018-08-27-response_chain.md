@@ -23,7 +23,7 @@ tags: 分析实现
 - 内容布局重绘。视图渲染到屏幕上虽然很复杂，但按照不同的`layout`方式提供了不同阶段的重绘调起接口，使得子类具有很强的定制性
 
 视图树的结构如下，由于`UIView`是`UIResponder`的子类，可以通过`nextResponder`访问到父级视图，但由于`responder`并不全是具备可视载体的对象，通过`nextResponder`向上查找的方式可能会导致无法通过位置计算的方式查找响应者
-![](https://upload-images.jianshu.io/upload_images/783864-0301504ec3344805.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/27/1657b170c2bae3ee?w=1240&h=834&f=png&s=970003)
 
 ### 查找响应者
 讲了这么多，也该聊聊查找响应者的过程了。前面说了，`responder`决定了对象具有响应处理的能力，而`UIView`才是提供了可视载体和点击坐标关联的能力。换句话说，查找响应者实际上是查找点击坐标落点位置在其可视范围内且其具备处理事件能力的对象，按照官方话来说就是既要`responde`又要`view`的对象。因为需要先找到响应者，才能有进一步的处理，所以直接从后者的接口找起，两个`api`：
@@ -45,7 +45,7 @@ tags: 分析实现
         return res;
     }
 
-![](https://upload-images.jianshu.io/upload_images/783864-c9039220607d556e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/27/1657b170c298868f?w=640&h=738&f=png&s=6894)
 
 如图创建相同的布局结构，然后点击`BView`，得到的日志：
 
@@ -103,7 +103,7 @@ tags: 分析实现
     
     @end
 
-![](https://upload-images.jianshu.io/upload_images/783864-6c222f90259cbc03.gif?imageMogr2/auto-orient/strip)
+![](https://user-gold-cdn.xitu.io/2018/8/27/1657b170c2e79c51?w=858&h=359&f=gif&s=96453)
 
 前面说过`UIResponder`提供了用户操作的处理接口，但很明显`touches`系列的接口默认是`未实现的`，因此`BView`即便成为了响应链上的最上层节点，依旧无法处理点击事件，而是沿着响应链查找响应者：
 
@@ -142,7 +142,7 @@ tags: 分析实现
 ## 应用
 最近有个需求需要在`tabbar`的位置上方弹出气泡，且允许用户点击气泡发生交互事件。从视图层来分析，`tabbar`被嵌套在多层尺寸等同于菜单栏的`view`当中：
 
-![](https://upload-images.jianshu.io/upload_images/783864-f7557f75b6029618.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/8/27/1657b170c286ead5?w=1074&h=1530&f=png&s=209340)
 
 如果要实现从`item`弹起气泡并且可交互，有两个可行的方案：
 
@@ -256,7 +256,7 @@ tags: 分析实现
 
 ### 运行效果
 红色视图弹出绿色视图，超出自身和父视图的显示范围，点击有效：
-![](https://upload-images.jianshu.io/upload_images/783864-211f2a575f6cdc0a.gif?imageMogr2/auto-orient/strip)
+![](https://user-gold-cdn.xitu.io/2018/8/27/1657b170c229bef6?w=858&h=813&f=gif&s=119198)
 
 ### 定制改进
 由于核心功能在于`event handle`，目前代码只提供了简单的弹出接口，需要进一步扩充弹出接口能力的可以考虑两点改进：
@@ -266,5 +266,5 @@ tags: 分析实现
 
 文章的[源码地址](https://github.com/sindrilin/SLFreedomPop)
 
-![关注我的公众号获取更新信息](https://upload-images.jianshu.io/upload_images/783864-5f15782c42a970c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 

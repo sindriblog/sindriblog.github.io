@@ -363,5 +363,5 @@ tags:
 
 
 
-![关注我的公众号获取更新信息](https://upload-images.jianshu.io/upload_images/783864-5f15782c42a970c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/11/15/16716b1afe57d0d6?w=430&h=430&f=jpeg&s=23750)
 

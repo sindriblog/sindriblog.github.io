@@ -63,9 +63,9 @@ tags:
 
 通过断点和界面显示可以看到在`Before Waiting`阶段的两次回调之间，`transaction`完成了属性修改的渲染任务（在`DEBUG+断点`状态下，隐式动画不能很好的完成动画效果）：
 
-![](http://p0zs066q3.bkt.clouddn.com/2017121401.jpg)
+![](https://user-gold-cdn.xitu.io/2017/12/15/16059375e2064267?w=1240&h=773&f=jpeg&s=82512)
 
-![](http://p0zs066q3.bkt.clouddn.com/2017121402.jpg)
+![](https://user-gold-cdn.xitu.io/2017/12/15/160593761443aa0d?w=1240&h=575&f=jpeg&s=74566)
 
 通过上面的测试可以确定`transaction`的事务处理确实发生在`before waiting`阶段。但由于注册`observer`时传入的优先级可以影响回调顺序，为了排除回调顺序可能对测试的干扰，可以通过`hook`掉`CFRunLoopAddObserver`这一注册函数，来获取已有的所有注册`before waiting`的回调信息：
 
@@ -91,15 +91,15 @@ tags:
 
 先于`CATransaction`回调发生卡顿。点击按钮后，界面卡顿`1s`，然后才开始执行动画。期间多次点击按钮无效：
     
-![](http://p0zs066q3.bkt.clouddn.com/2017121403.gif)
+![](https://user-gold-cdn.xitu.io/2017/12/15/16059375d8247d30?w=797&h=555&f=gif&s=216874)
 
 后于`CATransaction`回调发生卡顿。点击按钮后，动画立刻开始执行。界面会停止响应`1s`，同样卡顿期间不响应点击。动画存在卡帧现象，但不严重：
 
-![](http://p0zs066q3.bkt.clouddn.com/2017121404.gif)
+![](https://user-gold-cdn.xitu.io/2017/12/15/16059375d83f2554?w=797&h=555&f=gif&s=189996)
 
 在`transaction`前后制作卡顿确实产生了不同的效果，但是即便更换卡顿的时机，动画效果仍是比较流畅的，这证明了渲染、展示过程和主线程可能是并发执行的。实际上在`WWDC2014`的视频中有对图层渲染过程的详细讲述，`隐式动画`遵循这样的渲染过程。图层渲染过程分为三个阶段：
 
-![](http://p0zs066q3.bkt.clouddn.com/2017121405.jpg)
+![](https://user-gold-cdn.xitu.io/2017/12/15/16059375dc368d95?w=692&h=343&f=jpeg&s=18871)
 
 1. `Commit Transaction + Decode`
   
@@ -131,11 +131,11 @@ tags:
 ### 转场卡顿
 默认的转场动画实际上也是由`transaction`来完成的，属于隐式动画。通过`hook`掉获取`CAAction`的代理方法，在忽略掉`nil`和`NSNull`的无效返回值后，一个`push`跳转动画总共涉及到了三个`CAAction`子类。从类名上来看`_UIViewAdditiveAnimationAction`是和转场动画关联最密切的子类，也证明了系统默认的转场跳转实际上也是交给了`transaction`机制来处理的。另外从`log`上的执行来看，转场实际上也属于`隐式动画`：
 
-![](http://p0zs066q3.bkt.clouddn.com/2017121406.jpg)
+![](https://user-gold-cdn.xitu.io/2017/12/15/16059375dfa8e7a0?w=1064&h=420&f=jpeg&s=91737)
 
 转场卡顿从效果上看能分为`转场前卡顿`和`转场后卡顿`，后者属于常见的的转场性能瓶颈，大多由于新界面视图层级复杂、大量`IO`等工作导致，是最容易定位的一类问题。而前者属于少见，且不容易定位的卡顿现象之一。结合上面的测试，如果发生了`转场前卡顿`，那么说明渲染工作在`1`开始之前就发生了卡顿。
 
-![](http://p0zs066q3.bkt.clouddn.com/2017121407.gif)
+![](https://user-gold-cdn.xitu.io/2017/12/15/16059375ddec80e9?w=269&h=555&f=gif&s=33643)
 
 在上面的`log`中可以看到`viewDidLoad`和`viewWillAppear`的调用同样处在`before waiting`阶段。假设这两个方法的调用时机在`transaction`前面，那么一旦两个方法发生了卡顿，肯定会跳转动画卡帧后执行的效果。通过分别在两个方法中添加`sleep`操作测试，还原了`gif`的卡顿效果。因此可以得出转场动画过程中的流程：
 
@@ -144,7 +144,7 @@ tags:
 ### 补充
 虽然苹果文档和测试结果都说明了一件事情：`transaction`的回调处在`before waiting`阶段，但是否存在可能：`runloop`无法进入`before waiting`呢？实际上这种可能是完全存在的，根据苹果文档中的描述，下图可以用来表示`runloop`的内部逻辑：
 
-![](https://blog.ibireme.com/wp-content/uploads/2015/05/RunLoop_1.png)
+![](https://user-gold-cdn.xitu.io/2017/12/14/160558dc91def8b8?w=1294&h=996&f=png&s=229757)
 
 假如`runloop`中一直有`source1`事件，那么会一直在`2、3、4、5、9`之间循环处理。而`touches`发生时，就是典型的持续`source1`事件环境。换句话说，如果用户一直在滚动列表，那么`before waiting`将不会到来。但实际在应用使用中，即便是手指不离开屏幕，`cell`依旧能够展示各种动画。因此可以推断出`transaction`至少还注册了`UITracking`这个模式下的`runloop`监听处理，感兴趣的同学可以在滚动列表上采用类似的手段测试具体的处理时机。
 
@@ -157,5 +157,6 @@ tags:
 
 - 动画在开始之后，即便是应用发生卡顿，对动画的影响也要低于先于`transaction`的卡顿。因此如果你不知道如何优化动画前的烂摊子，那么放到动画开始之后吧
 
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 

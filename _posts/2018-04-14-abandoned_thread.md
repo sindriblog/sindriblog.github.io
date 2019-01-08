@@ -24,7 +24,7 @@ tags:
 
 如果`runloop`在启动之后没有任何`sources`、`timers`或者`ports`事件可以处理，那么会自动退出，否则会在处理完成后让线程陷入休眠，等待这些事件重新唤醒线程处理。下面是最常用来表示`runloop`处理逻辑的示意图：
 
-![](http://p0zs066q3.bkt.clouddn.com/2018041301.png)
+![](https://user-gold-cdn.xitu.io/2018/4/14/162c232087e6a385?w=1294&h=996&f=png&s=229757)
 
 除开图中列出的事件之外，`main loop`会处理`timer`之后检测队列中是否存在待执行的`block`然后开始执行
 
@@ -237,6 +237,5 @@ tags:
 ## 结论
 从测试来看，在子线程启动`runloop`并不是一个很明智的选择：这会导致线程保活期间被遗弃，失去了处理消息派发的能力，且无法响应其他线程的通信。其次，即便可以通过`perform block`来继续为保活线程添加任务处理，但在保活线程的`runloop`缺乏稳定的唤醒机制的情况下，还需要其他线程来提供唤醒能力，这增加了代码设计的成本，并且不会有额外的好处
 
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
-
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 

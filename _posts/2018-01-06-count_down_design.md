@@ -52,9 +52,9 @@ tags:
 ### 存储结构
 一套功能方案设计的目的是为了`简化逻辑流程，隐藏实现细节，尽可能少的暴露接口`。普通的倒计时是调用方直接使用定时器实现规律性回调，定时器需要持有调用方的信息。而倒计时设计隐藏了定时器的实现细节，只需调用方提供回调，其余的耦合关联由管理类来完成，类似的设计有`Notification`和`Observer`等
 
-![](http://p0zs066q3.bkt.clouddn.com/2018010616.png)
+![](https://user-gold-cdn.xitu.io/2018/1/8/160d53f68c1f2f74?w=1544&h=1404&f=jpeg&s=495873)
 
-![](http://p0zs066q3.bkt.clouddn.com/2018010610.png)
+![](https://user-gold-cdn.xitu.io/2018/1/8/160d52ee62123d89?w=1844&h=1364&f=jpeg&s=577491)
 
 即便是系统使用的两种类似的监听设计，在内部实现时，所用到的存储结构也是不同的。`Notification`不持有对象本身，采用保存对象地址的实现，但这样存在野指针风险。`Observer`会持有对象，但会造成循环引用的风险。可以说：
 
@@ -67,7 +67,7 @@ tags:
 
     `delegate`在委托方和代理方中间添加了一层中间层，解除了双方的直接耦合关系，但同样的委托方和代理方需要依赖于`protocol`，这是这种模式必然存在的耦合关系。相比之下，`block`并不存在这种烦恼
     
-    ![](http://p0zs066q3.bkt.clouddn.com/2018010611.png)
+    ![](https://user-gold-cdn.xitu.io/2018/1/8/160d52ee64ece81b?w=814&h=1024&f=jpeg&s=183904)
     
 - 更少的代码
 
@@ -192,20 +192,20 @@ tags:
 
 - `多定时器设计`
     
-    ![](http://p0zs066q3.bkt.clouddn.com/2018010608.png)
+    ![](https://user-gold-cdn.xitu.io/2018/1/6/160cc16fc1f86cd9?w=1894&h=1032&f=jpeg&s=431829)
     
     多定时器的设计下，每个倒计时任务拥有自己的计时器。优点在于可以单独控制每个任务的回调间隔。缺点是由于多个定时器的屏幕刷新不一定会同步，导致`UI`更新不同步等
     
 - `单定时器设计`
 
-    ![](http://p0zs066q3.bkt.clouddn.com/2018010602.png)
+    ![](https://user-gold-cdn.xitu.io/2018/1/6/160cbfcd66386381?w=1916&h=958&f=jpeg&s=386221)
     
     单定时器的设计下，所有倒计时任务使用同一个计时器。优点在于减少了额外的性能损耗，设计结构更清晰。缺点在定时器已经启动的情况下，新任务的首次倒计时可能会有明显的提前以及多个倒计时任务强制使用同一种计时间隔。
     
 考虑到倒计时的的`UI`同步效果以及更好的性能，我选择`单定时器设计`方案。另外如果确实存在多个不同计时间隔的需求，`单定时器设计`也可以很好的扩充接口提供支持
 
 #### 注册任务
-![](http://p0zs066q3.bkt.clouddn.com/2018010613.png)
+![](https://user-gold-cdn.xitu.io/2018/1/8/160d52ee6340a06a?w=1394&h=1362&f=jpeg&s=397256)
 
 对象在注册倒计时任务时，取对象的地址进行`hash计算`，根据结果找到存储的对象链表。链表节点存储的`objcaddr`用来匹配对象，如果匹配失败，那么新建一个任务回调节点。完成插入后，启动定时器：
     
@@ -255,7 +255,7 @@ tags:
     }
     
 #### 倒计时回调
-![](http://p0zs066q3.bkt.clouddn.com/2018010614.png)
+![](https://user-gold-cdn.xitu.io/2018/1/8/160d52ee5798c78f?w=1176&h=1322&f=jpeg&s=335382)
 
 定时器启动后，会遍历所有的回调链表，并且调起回调处理。如果在本次遍历中发生已经不存在任何倒计时任务，那么定时器将被释放：
 
@@ -311,7 +311,7 @@ tags:
 #### 前后台切换
 应用在前后台切换的过程中，会在`非后台线程`执行完当前任务后挂起线程。一般来说，我们的倒计时会因为前后台切换而中止，除非我们`将倒计时放在主线程`或`创建后台线程继续执行`。此外，应用重新回到`ative`状态时，只要在后台停留的时长超出了定时器的回调间隔，那么倒计时会立刻被回调，破坏了原有的回调时间和倒计时长
 
-![](https://user-gold-cdn.xitu.io/2018/1/6/160cbfcd58ef3116?imageView2/0/w/1280/h/960/ignore-error/1)
+![](https://user-gold-cdn.xitu.io/2018/1/6/160cbfcd58ef3116?w=1816&h=406&f=jpeg&s=151533)
 
 文章开头提到有三种方案解决这种前后台切换对定时器的方案。`后台线程倒计时`可以最大程度的保证倒计时的回调时间依旧正确，但是基于应用后台无感知的特性，这种消耗资源的方案不在我们的考虑范围。由于在设计上，我已经采用了保留`lefttime`的方式，因此`保存deadline`重新计算剩余时长也不是最佳选择。采用方案`2`计算后台停留时间并且更新剩余时间是最合适的做法：
 
@@ -352,7 +352,7 @@ tags:
 由于通知的回调线程和定时器的处理线程可能存在多线程的竞争，为了排除这一干扰，我采用了`sema`加锁，以及在遍历期间挂起定时器，减少不必要的麻烦
 
 #### 对外接口
-![](http://p0zs066q3.bkt.clouddn.com/2018010615.png)
+![](https://user-gold-cdn.xitu.io/2018/1/8/160d52ee55ea7d7c?w=588&h=1318&f=jpeg&s=168584)
 
 前文说过，在不影响功能性的情况下，应当尽量减少对外接口的数量。因此，倒计时管理类只需要提供一个接口即可：
 
@@ -385,11 +385,11 @@ tags:
 #### 操作安全
 为了倒计时任务的可靠性，我们应该在子线程启动定时器，一方面提高了精准度，另一方面避免造成主线程的卡顿。但由于涉及到`UI更新`和`前后台切换`两个情况，必须要考虑到多线程可能对数据的破坏力。从设计上来说，底层设计只提供实现接口，不考虑任何业务场景。因此应该在上层调用处做安全处理
 
-![](http://p0zs066q3.bkt.clouddn.com/2018010606.png)
+![](https://user-gold-cdn.xitu.io/2018/1/6/160cbfcd5b8b5026?w=872&h=1048&f=jpeg&s=179874)
 
 管理类使用`DISPATCH_QUEUE_SERIAL`属性创建的任务队列，确保定时器的回调之间是互不干扰的。对外提供的`register`接口无法保证调用方所处的线程环境，因此应当对操作进行加锁。此外涉及到`hashmap`的改动的代码都应当加锁保护：
 
-    - (instancetype)init {
+        - (instancetype)init {
         if (self = [super init]) {
             self.receives = new LXDReceiverHashmap();
             self.lock = dispatch_semaphore_create(1);
@@ -419,14 +419,14 @@ tags:
 
     @implementation NSObject (PerformTimer)
     
-    - (void)beginCountDown: (LXDObjectCountDown)countDown forSeconds: (NSInteger)seconds {
-        if (countDown == nil || seconds <= 0) { return; }
-        
-        __weak typeof(self) weakself = self;
-        [[LXDTimerManager timerManager] registerCountDown: ^(long leftTime, bool *isStop) {
+    __weak typeof(self) weakself = self;
+    [[LXDTimerManager timerManager] registerCountDown: ^(long leftTime, bool *isStop) {
+        if (weakself) {
             countDown(weakself, leftTime, (BOOL *)isStop);
-        } forSeconds: seconds withReceiver: self];
-    }
+        } else {
+            *isStop = true;
+        }
+    } forSeconds: seconds withReceiver: self];
 
     @end
     
@@ -443,6 +443,6 @@ tags:
 
 > [demo](https://github.com/sindrilin/LXDTimerManager)
 
-![关注我的公众号获取更新信息](https://github.com/sindriblog/sindriblog.github.io/blob/master/assets/images/wechat_code.jpg?raw=true)
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/8/21/1655b3a6f7d188a8?w=430&h=430&f=jpeg&s=23750)
 
 

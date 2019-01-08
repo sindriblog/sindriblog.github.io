@@ -87,11 +87,11 @@ tags: 开发笔记
     
 交换方法会将两个`method`中的`imp`进行交换。而在理想情况下，父类先于子类完成了`swizzle`，原有方法保存了`swizzle`之后的`imp`，这时候子类再进行`swizzle`就能正确调用。下图标识了`SEL`和`IMP`的关联，箭头表示`IMP`的调用次序：
 
-![](https://upload-images.jianshu.io/upload_images/783864-ea12e2b4ac1dcbaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/9/19/165f169b982b1d12?w=1240&h=1018&f=png&s=606738)
 
 但是如果子类的`swizzle`发生的更早，这时候`viewWillAppear`对应的`imp`已经被修改，父类再进行`swizzle`的时候，调用次序已经出错：
 
-![](https://upload-images.jianshu.io/upload_images/783864-256bd9dc6ed4626c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/9/19/165f169b9a481def?w=1240&h=1010&f=png&s=608322)
 
 解决方式也并不复杂，包括：
 
@@ -103,7 +103,7 @@ tags: 开发笔记
 ## 行为冲突
 在`OOP`的设计中，将描述对象抽象成类，将对象行为抽象成接口。从工程师的角度来说，职责单一的接口更利于迭代维护。类一旦设计好，应当不改动或者少改动接口。对于设计良好的接口来说，`swizzle`很可能直接破坏了整个接口的行为：
 
-![](https://upload-images.jianshu.io/upload_images/783864-6cb67e06408cf585.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/9/19/165f169b98002788?w=1240&h=449&f=png&s=267489)
 
 举个例子，`crash防护`是当下被追捧的工具，但其中`KVO`的防护或许是一种很烂的手段。从实现来说，为了避免`KVO`导致的循环引用，需要在引用关系的中间插入一个`weakProxy`来做防护，因此监听代码实际上可以转换成：
 
@@ -140,7 +140,7 @@ tags: 开发笔记
 
 在第二次生成`WeakProxy`后并调用方法后，`OneWeakProxy`创建的对象被释放。如果要避免多个防护工具对流程造成干扰，还需要做更多额外的工作。况且一旦有其中一个没有完美实现，整套`防护机制`可能就直接崩溃失效了，因此`KVO防护`不见得是一种好手段
 
-![](https://upload-images.jianshu.io/upload_images/783864-2286ae22b41ecbd0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2018/9/19/165f169b9a244023?w=588&h=572&f=png&s=346731)
 
 ## 代码整体性
 以上面例子来说，`KVO`是`NSObject`这个基类提供的能力，由于`子类默认沿用父类的方法实现`这一原则，这种方法的`swizzle`实际上影响了全部的对象，例如下面的代码实际上效果是完全一样的：
@@ -173,6 +173,5 @@ tags: 开发笔记
 
 换句话说，以这种`装扮模式`思维来构建的代码，如果中间的一个方法被影响甚至破坏了，在中间的这个类开始往下将呈现塌式破坏，可以想象如果`UIView`一旦出错，应用几乎丧失展示控件的能力。但假如确实需要`swizzle`的中间环节，必须保证`swizzle`不对或者尽量少地对子类对象造成影响
 
-![关注我的公众号获取更新信息](https://upload-images.jianshu.io/upload_images/783864-5f15782c42a970c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
+![关注我的公众号获取更新信息](https://user-gold-cdn.xitu.io/2018/9/19/165f169b917d7ba4?w=430&h=430&f=jpeg&s=23750)
 
