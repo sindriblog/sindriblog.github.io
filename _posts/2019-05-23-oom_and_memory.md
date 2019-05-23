@@ -1,5 +1,5 @@
 ---
-title: OOM与内存检测
+title: OOM与内存
 date: 2019-05-23 08:00
 tags:
 - 开发笔记
