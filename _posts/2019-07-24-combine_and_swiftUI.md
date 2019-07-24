@@ -2,7 +2,7 @@
 title: Combine和SwiftUI
 date: 2019-07-24 08:00
 tags:
-- 开发笔记
+- WWDC
 ---
 
 尽管今年的`WWDC`已经落幕，但在过去的一个多月时间，苹果给`iOS`开发者带来了许多惊喜，其中堪称最重量级的当属`SwiftUI`和`Combine`两大新框架
