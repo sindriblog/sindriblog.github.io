@@ -10,7 +10,7 @@ tags:
 在更早之前，由于缺少系统层的声明式`UI`语言，在`iOS`系统上的`UI`开发对于开发者而言，并不友善，而从`iOS13`开始，开发者们终于可以摆脱落后的布局系统，拥抱更简洁高效的开发新时代。与`SwiftUI`配套发布的响应式编程框架`Combine`提供了更优美的开发方式，这也意味着`Swift`真正成为了`iOS`开发者们必须学习的语言。本文基于`Swift5.1`版本，介绍`SwiftUI`是如何通过结合`Combine`完成数据绑定
 
 ## SwiftUI
-![](https://upload-images.jianshu.io/upload_images/783864-c9e79750dcdb192c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2019/7/24/16c240ba31a2fe31?w=702&h=1400&f=jpeg&s=22385)
 
 首先来个例子，假如我们要实现上图的登陆界面，按照以往使用`UIKit`进行开发，那么我们需要：
 
@@ -128,7 +128,7 @@ tags:
         public var storageValue: Binding<Value> { get }
     }
     
-`Swift5.1`的新特性之一，开发者可以将变量的`IO`实现封装成通用逻辑，用关键字~~`@propertyDelegate`~~（更新于`beta4`版本，使用`@propertyWrapper`替代）修饰读写逻辑，并以`@wrapperName var variable`的方式封装变量。以[WWDC Session 415](https://developer.apple.com/videos/play/wwdc2019/415/)视频中的例子实现对变量`copy-on-write`的封装：
+`Swift5.1`的新特性之一，开发者可以将变量的`IO`实现封装成通用逻辑，用关键字`@propertyWrapper`（更新于`beta4`版本）修饰读写逻辑，并以`@wrapperName var variable`的方式封装变量。以[WWDC Session 415](https://developer.apple.com/videos/play/wwdc2019/415/)视频中的例子实现对变量`copy-on-write`的封装：
 
     @propertyWrapper
     public struct DefensiveCopying<Value: NSCopying> {
@@ -228,11 +228,11 @@ tags:
 
 在这段代码中，`Action`实际上会等待`State/Data`完成后，去更新`View`，`View`会再去访问数据更新状态，这种逻辑会让数据在不同事件模块中随意流动，易读性和可维护性都会变得更差：
 
-![](https://upload-images.jianshu.io/upload_images/783864-28de8dbc69731179.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2019/7/24/16c240ba50d5046d?w=1026&h=566&f=png&s=79198)
 
 而一旦事件之间的流动采用了异步编程的方式来处理，发出事件的人不关心等待事件的处理，无疑能让数据的流动变得更加单一，`Combine`的意义就在于此。`SwiftUI`与其结合来控制业务数据的单向流动，让开发复杂度大大降低：
 
-![来自淘宝技术](https://upload-images.jianshu.io/upload_images/783864-623c23d1c20ce511?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![来自淘宝技术](https://user-gold-cdn.xitu.io/2019/7/25/16c26fd29b2bc75f?w=587&h=314&f=png&s=25437)
 
 ### Publisher
 
@@ -321,7 +321,7 @@ tags:
     
 `Subscriber`定义了一套`receive`接口用来接收`Publisher`发送的消息，一个完整的订阅流程如下图：
 
-![](https://upload-images.jianshu.io/upload_images/783864-9b5692504c959605.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://user-gold-cdn.xitu.io/2019/7/24/16c240ba3a90d058?w=962&h=900&f=jpeg&s=32896)
 
 在订阅成功之后，`receive(subscription:)`会被调用一次，其类型如下：
 
@@ -458,7 +458,7 @@ tags:
     
 最后放上运行效果：
 
-![](https://upload-images.jianshu.io/upload_images/783864-0dc6df8edf9242a9.gif?imageMogr2/auto-orient/strip)
+![](https://user-gold-cdn.xitu.io/2019/7/24/16c240ba50c2226f?w=255&h=180&f=gif&s=11044)
 
 ## 其他
 从今年`wwdc`发布的新内容，不难看出苹果的野心，由于`Swift`本身就是一门特别适合编写`DSL`的语言，而在`iOS13`上新增的两个标准库让项目的开发成本和维护成本变得更低的特点。由于其极高的可读性，开发者很容易就习惯新的标准库。目前`SwiftUI`实时用到了`UIKit`、`CoreGraphics`等库，可以看做是基于这些库的抽象封装层，随着后续`Swift`的普及度，苹果底层可以换掉`UIKit`独立存在，甚至实现跨平台的大前端一统。当然目前苹果上的大前端尚早，不过未来可期
