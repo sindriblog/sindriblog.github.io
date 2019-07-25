@@ -128,9 +128,9 @@ tags:
         public var storageValue: Binding<Value> { get }
     }
     
-`Swift5.1`的新特性之一，开发者可以将变量的`IO`实现封装成通用逻辑，用关键字`@propertyDelegate`修饰读写逻辑，并以`@wrapperName var variable`的方式封装变量。以[WWDC Session 415](https://developer.apple.com/videos/play/wwdc2019/415/)视频中的例子实现对变量`copy-on-write`的封装：
+`Swift5.1`的新特性之一，开发者可以将变量的`IO`实现封装成通用逻辑，用关键字~~`@propertyDelegate`~~（更新于`beta4`版本，使用`@propertyWrapper`替代）修饰读写逻辑，并以`@wrapperName var variable`的方式封装变量。以[WWDC Session 415](https://developer.apple.com/videos/play/wwdc2019/415/)视频中的例子实现对变量`copy-on-write`的封装：
 
-    @propertyDelegate
+    @propertyWrapper
     public struct DefensiveCopying<Value: NSCopying> {
         private var storage: Value
         
@@ -138,11 +138,17 @@ tags:
             storage = value.copy() as! Value
         }
         
-        public var value: Value {
+        public var wrappedValue: Value {
             get { storage }
             set {
                 storage = newValue.copy() as! Value
             }
+        }
+        
+        ///  beta4版本更新，必须声明projectedValue后才能使用$variable的方式访问Wrapper<Value>
+        ///  beta3版本使用wrapperValue命名
+        public var projectedValue: DefensiveCopying<Value> {
+            get { self }
         }
     }
     
@@ -151,7 +157,7 @@ tags:
         public var name: NSString
     }
     
-另外以`PropertyWrapper`封装的变量，会默认生成一个命名为`$name`的`DefensiveCopying<String>`类型的变量，下面两种值访问操作是相同的：
+另外以`PropertyWrapper`封装的变量，会~~默认生成一个命名为`$name`的`DefensiveCopying<String>`类型的变量~~，更新后会默认生成`_name`命名的`Wrapper<Value>`类型参数，或声明关键变量`wrapperValue/projectedValue`后生成可访问的`$name`变量，下面两种值访问操作是相同的：
 
     extension Person {
         func visitName() {
@@ -226,7 +232,7 @@ tags:
 
 而一旦事件之间的流动采用了异步编程的方式来处理，发出事件的人不关心等待事件的处理，无疑能让数据的流动变得更加单一，`Combine`的意义就在于此。`SwiftUI`与其结合来控制业务数据的单向流动，让开发复杂度大大降低：
 
-![来自淘宝技术](https://mmbiz.qpic.cn/mmbiz_png/33P2FdAnjuibEkaicTmxGxDQia90815kCplz0uic6nPibq3TeIhLEQd73JYtIF5iaFKtUiaW3ljW6BHZicdnic8UMjmksiag/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![来自淘宝技术](https://upload-images.jianshu.io/upload_images/783864-623c23d1c20ce511?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ### Publisher
 
@@ -401,9 +407,9 @@ tags:
         final public func send(completion: Subscribers.Completion<Failure>)
     }
 
-`Publishable`的实现代码如下：
+`Publishable`的实现代码如下（7.25更新）：
 
-    @propertyDelegate
+    @propertyWrapper
     public struct Publishable<Value: Equatable> {
         private var storage: Value
         var publisher: PassthroughSubject<Value?, Never>
@@ -414,7 +420,7 @@ tags:
             Publishers.AllSatisfy
         }
         
-        public var value: Value {
+        public var wrappedValue: Value {
             get { storage }
             set {
                 if storage != newValue {
@@ -422,6 +428,10 @@ tags:
                     publisher.send(storage)
                 }
             }
+        }
+
+        public var projectedValue: Publishable<Value> {
+            get { self }
         }
     }
     
@@ -461,4 +471,5 @@ tags:
 [Combine入门导读](https://icodesign.me/posts/swift-combine/)
 
 [新晋网红SwiftUI](https://mp.weixin.qq.com/s/x_jFcKeXSbtdK0CnfayFsw)
+
 
