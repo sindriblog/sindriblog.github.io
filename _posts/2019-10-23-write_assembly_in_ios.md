@@ -528,8 +528,6 @@ tags:
 
 [Kernel_Syscalls](https://www.theiphonewiki.com/wiki/Kernel_Syscalls)
 
-[iOS安全加固实现](http://km.oa.com/group/27010/articles/show/398953)
-
 [ARM64 架构之入栈/出栈操作](https://juejin.im/post/5cadeda55188251ad87b0eed)
 
 [深入iOS系统底层之CPU寄存器](https://juejin.im/post/5a786c555188257a6854b18c)
