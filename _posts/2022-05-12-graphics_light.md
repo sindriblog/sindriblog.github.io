@@ -12,6 +12,7 @@ tags:
 
 ## 系列往期
 [图形学笔记-渲染](http://sindrilin.com/2022/05/02/graphics_pixels_render.html)
+
 [图形学笔记-变换](http://sindrilin.com/2022/05/05/graphics_transform.html)
 
 ## 物体显色
